@@ -9,9 +9,5 @@ for i in range (1, 17) :
     kurang = p.kurang(i)
     print("ubin ", i, " kurang : ", kurang)
 '''
-
-print("is solveable?", end = " ")
-if (p.isSolvable()) :
-    print("Y")
-else :
-    print("N")
+# try to access private
+print(p.buffer[0][0])
