@@ -14,6 +14,9 @@ class Puzzle :
             for j in range (4) :
                 self.__buffer[i][j] = puzzle.getByIdx(i,j)
 
+    def setByIdx(self, i, j, val) :
+        self.__buffer[i][j] = val
+
     def getByIdx(self, i, j) :
         return self.__buffer[i][j]
 
@@ -62,9 +65,15 @@ class Puzzle :
             i += 1
         return loc
 
+    def locIdx(self, no_ubin) :
+        # mengembalikan indeks dari ubin dengan nomor no_ubin
+        loc = self.locate(no_ubin) - 1
+        i = loc // 4
+        j = loc % 4
+        return (i, j)
+
     def getByLoc(self, loc) :
         # posisi adalah integer bernilai [1..16]
-        pos = loc - 1
-        i = pos // 4
-        j = pos % 4
+        i = self.locIdx(self.getByLoc(loc))[0]
+        j = self.locIdx(self.getByLoc(loc))[1]
         return self.__buffer[i][j]
