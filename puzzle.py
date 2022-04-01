@@ -3,11 +3,19 @@ import random
 
 class Puzzle :
     # Setiap ubin pada puzzle ditandai angka [1..16], dengan ubin bernilai 16 adalah ubin kosong
-
     def __init__(self) :
         self.__buffer = [[-1 for j in range (4)] for i in range (4)]
-        #self.random()
-        self.create_final()
+        # secara default bernilai random
+        self.random()
+        #self.create_final()
+    
+    def from_file(self, filename) :
+        f = open(filename, "r")
+        for i in range (4) :
+            line = f.readline().strip()
+            nums = line.split(' ')
+            for j in range (4) :
+                self.__buffer[i][j] = int(nums[j])
 
     def copy(self, puzzle) :
         # __buffer is initialized
