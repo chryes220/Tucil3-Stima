@@ -6,13 +6,21 @@ class Puzzle :
 
     def __init__(self) :
         self.__buffer = [[-1 for j in range (4)] for i in range (4)]
-        self.random()
+        #self.random()
+        self.create_final()
 
     def copy(self, puzzle) :
         # __buffer is initialized
         for i in range (4) :
             for j in range (4) :
                 self.__buffer[i][j] = puzzle.getByIdx(i,j)
+
+    def create_final(self) :
+        for i in range (4) :
+            for j in range (4) :
+                self.setByIdx(i,j, 4*i + j + 1)
+        self.setByIdx(3,2,16)
+        self.setByIdx(3,3,15)
 
     def setByIdx(self, i, j, val) :
         self.__buffer[i][j] = val
@@ -42,7 +50,7 @@ class Puzzle :
                     num = random.randint(1,16)
                 self.__buffer[i][j] = num
 
-    def print(self) :
+    def displayPuzzle(self) :
         for i in range (4) :
             for j in range (4) :
                 print(self.__buffer[i][j], end = " ")
@@ -65,15 +73,44 @@ class Puzzle :
             i += 1
         return loc
 
+    def locToIdx(self, loc) :
+        pos = loc - 1
+        i = pos // 4
+        j = pos % 4
+        return ((i, j))
+
     def locIdx(self, no_ubin) :
         # mengembalikan indeks dari ubin dengan nomor no_ubin
-        loc = self.locate(no_ubin) - 1
-        i = loc // 4
-        j = loc % 4
-        return (i, j)
+        i = 0
+        found = False
+        while (i < 4 and not found) :
+            j = 0
+            while (j < 4 and not found) :
+                if (self.__buffer[i][j] == no_ubin) :
+                    found = True
+                else :
+                    j += 1
+            if (not found) :
+                i += 1
+        return ((i, j))
 
     def getByLoc(self, loc) :
         # posisi adalah integer bernilai [1..16]
-        i = self.locIdx(self.getByLoc(loc))[0]
-        j = self.locIdx(self.getByLoc(loc))[1]
+        i = self.locToIdx(loc)[0]
+        j = self.locToIdx(loc)[1]
         return self.__buffer[i][j]
+
+    def isSolved(self) :
+        solved = True
+        for i in range (16) :
+            if (i+1 != self.getByLoc(i+1)) :
+                solved = False
+        return solved
+
+    def countCost(self) :
+        # menghitung ongkos untuk mencapai simpul tujuan dari simpul i
+        count = 0
+        for i in range (1,17) :
+            if (i != self.getByLoc(i) and self.getByLoc(i) != 16) :
+                count += 1
+        return count
