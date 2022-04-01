@@ -11,21 +11,31 @@ class PriorityQueue :
         return len(self.queue)
 
     def enqueue(self, puzzle, val, lv) :
-        # cost paling kecil di paling depan antrian
-        i = 0
-        while (i < len(self.queue) and self.queue[i][1] < val) :
-            i += 1
-        self.queue.insert(i, (puzzle, val, lv))
+        if (self.len() == 0) :
+            self.queue.append((puzzle, val, lv))
+        else :
+            # cost paling kecil di paling depan antrian
+            i = 0
+            while (i < self.len() and self.queue[i][1] < val) :
+                i += 1
+            self.queue.insert(i, (puzzle, val, lv))
     
     def dequeue(self) :
         val = self.queue.pop(0)
         return val
 
+    def printQueue(self) :
+        for el in self.queue :
+            el[0].displayPuzzle()
+            print("Cost : ", el[1])
+            print("Level : ", el[2])
+            print()
+
 
 class Solver :
     def __init__(self, puzzle) :
         self.__puzzle = Puzzle()
-        self.__puzzle.copy(puzzle)
+        self.__puzzle.copy(puzzle) # adalah start state dari puzzle, tidak diubah
         self.__node_count = 1 # jumlah simpul yang dibangkitkan
         self.__queue = PriorityQueue() # antrian dari simpul yang telah dibangkitkan
         self.__fin = False
@@ -65,32 +75,31 @@ class Solver :
         else :
             # urutan pencarian : up, right, down, left
             # bangkitkan semua simpul
-            i = self.__puzzle.locIdx(16)[0]
-            j = self.__puzzle.locIdx(16)[1]
+            i = puzzle.locIdx(16)[0]
+            j = puzzle.locIdx(16)[1]
             if (i != 0) :
-                child = self.up(i,j)
+                child = self.up(puzzle, i,j)
                 if (child != NULL) :
                     cost = lv + 1 + child.countCost()
                     self.__queue.enqueue(child, cost, lv + 1)
             if (j != 3) :
-                child = self.right(i,j)
+                child = self.right(puzzle, i,j)
                 if (child != NULL) :
                     cost = lv + 1 + child.countCost()
                     self.__queue.enqueue(child, cost, lv + 1)
             if (i != 3) :
-                child = self.down(i,j)
+                child = self.down(puzzle, i,j)
                 if (child != NULL) :
                     cost = lv + 1 + child.countCost()
                     self.__queue.enqueue(child, cost, lv + 1)
             if (j != 0) :
-                child = self.left(i,j)
+                child = self.left(puzzle, i,j)
                 if (child != NULL) :
                     cost = lv + 1 + child.countCost()
                     self.__queue.enqueue(child, cost, lv + 1)
         
 
     def solve(self) :
-        level = 0
         if (self.isSolvable()) :
             # do something
             # branch and bound
@@ -98,27 +107,28 @@ class Solver :
             self.__queue.enqueue(self.__puzzle, 0, 0)
             while (not self.__fin) :
                 head = self.__queue.dequeue()
-
+                
                 head[0].displayPuzzle()
                 print("Level : ", head[2])
                 print("Cost : " , head[1])
                 print()
-
+                
                 
                 self.branchBound(head[0], head[2])
                 
                 #self.__fin = True
                 if (self.__fin) :
                     print("This is the final state")
+            #self.__queue.printCost()
 
         else :
             print("Puzzle tidak dapat diselesaikan")
 
 
-    def up(self, i, j) :
+    def up(self, puzzle, i, j) :
         # loc_empty = self.__puzzle.locate(16)
         child = Puzzle()
-        child.copy(self.__puzzle)
+        child.copy(puzzle)
         if (i != 0) :
             # ubin kosong tidak berada di baris dengan indeks 0, tukar dengan ubin atas
             above = child.getByIdx(i-1, j)
@@ -128,9 +138,9 @@ class Solver :
         else :
             return NULL
 
-    def down(self, i, j) :
+    def down(self, puzzle, i, j) :
         child = Puzzle()
-        child.copy(self.__puzzle)
+        child.copy(puzzle)
         if (i != 3) :
             # ubin kosong tidak berada di baris dengan indeks 3, tukar dengan ubin bawah
             below = child.getByIdx(i+1, j)
@@ -140,9 +150,9 @@ class Solver :
         else :
             return NULL
     
-    def left(self, i, j) :
+    def left(self, puzzle, i, j) :
         child = Puzzle()
-        child.copy(self.__puzzle)
+        child.copy(puzzle)
         if (j != 0) :
             # ubin kosong tidak berada di kolom dengan indeks 0, tukar dengan ubin kiri
             left = child.getByIdx(i, j-1)
@@ -152,9 +162,9 @@ class Solver :
         else :
             return NULL
 
-    def right(self, i, j) :
+    def right(self, puzzle, i, j) :
         child = Puzzle()
-        child.copy(self.__puzzle)
+        child.copy(puzzle)
         if (j != 3) :
             # ubin kosong tidak berada di kolom dengan indeks 3, tukar dengan ubin kanan
             right = child.getByIdx(i, j+1)

@@ -2,21 +2,19 @@
 
 from puzzle import Puzzle
 from solver import Solver
+import random
 
-f = input("Masukkan nama file : ")
+if __name__ == "__main__" :
+    #name = input("Masukkan nama file : ")
+    name = "tc1.txt"
+    u = Puzzle()
+    u.from_file(name)
+    u.displayPuzzle()
+    print()
 
-p = Puzzle()
-p.displayPuzzle()
-if (p.isSolved()) :
-    print("solved")
-'''
-for i in range (1, 17) :
-    kurang = p.kurang(i)
-    print("ubin ", i, " kurang : ", kurang)
-'''
-s = Solver(p)
-if (s.isSolvable()) :
-    print("solvable")
-else :
-    print("not solvable")
-s.solve()
+    s = Solver(u)
+    if (s.isSolvable()) :
+        print("solvable")
+    else :
+        print("not solvable")
+    s.solve()
