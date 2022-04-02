@@ -6,7 +6,7 @@ import random
 
 if __name__ == "__main__" :
     #name = input("Masukkan nama file : ")
-    name = "tc_solvable_2.txt"
+    name = "tc_solvable_3.txt"
     u = Puzzle()
     u.from_file(name)
     u.displayPuzzle()

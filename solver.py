@@ -135,12 +135,6 @@ class Solver :
             while (not self.__fin and self.__queue.len() > 0) :
                 head = self.__queue.dequeue()
 
-                print("Level : ", head[2])
-                head[0].displayPuzzle()
-                print("Cost : ", head[1])
-                print("Moves : ", head[0].getMoves())
-                print()
-                
                 self.branchBound(head[0], head[2])
                 
                 #self.__fin = True
@@ -168,6 +162,7 @@ class Solver :
         return past
 
     def displayMoves(self) :
+        print(self.__sequence)
         print("Move sequence : ")
         self.__puzzle.displayPuzzle()
         copy_pz = Puzzle()
