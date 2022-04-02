@@ -39,7 +39,7 @@ class Solver :
     def __init__(self, puzzle) :
         self.__puzzle = Puzzle()
         self.__puzzle.copy(puzzle) # adalah start state dari puzzle, tidak diubah
-        self.__node_count = 1 # jumlah simpul yang dibangkitkan
+        self.__node_count = 0 # jumlah simpul yang dibangkitkan
         self.__queue = PriorityQueue() # antrian dari simpul yang telah dibangkitkan
         self.__past_states = [] # list yang berisi (puzzle, cost)
         self.__sequence = []
@@ -95,6 +95,7 @@ class Solver :
                 if (not self.isPast(child, cost)) :
                     self.__queue.enqueue(child, cost, lv + 1)
                     self.__past_states.append((child, cost))
+                    self.__node_count += 1
                 #print("up")
                 #child.displayPuzzle()
             if (j != 3 ) :
@@ -105,6 +106,7 @@ class Solver :
                 if (not self.isPast(child, cost)) :
                     self.__queue.enqueue(child, cost, lv + 1)
                     self.__past_states.append((child, cost))
+                    self.__node_count += 1
                 #print("right")
                 #child.displayPuzzle()
             if (i != 3) :
@@ -115,6 +117,7 @@ class Solver :
                 if (not self.isPast(child, cost)) :
                     self.__queue.enqueue(child, cost, lv + 1)
                     self.__past_states.append((child, cost))
+                    self.__node_count += 1
                 #print("down")
                 #child.displayPuzzle()
             if (j != 0) :
@@ -125,6 +128,7 @@ class Solver :
                 if (not self.isPast(child, cost)) :
                     self.__queue.enqueue(child, cost, lv + 1)
                     self.__past_states.append((child, cost))
+                    self.__node_count += 1
                 #print("left")
                 #child.displayPuzzle()
     
@@ -138,6 +142,7 @@ class Solver :
             start = time.time()
             self.__queue.enqueue(self.__puzzle, self.__puzzle.countCost(), 0)
             self.__past_states.append((self.__puzzle, 0))
+            self.__node_count += 1
             while (not self.__fin and self.__queue.len() > 0) :
                 head = self.__queue.dequeue()
 
@@ -147,6 +152,7 @@ class Solver :
                     # display time
                     end = time.time()
                     print("Solution found in ", end-start, "s")
+                    print("Total node :", self.__node_count)
             self.displayMoves()
 
         else :
