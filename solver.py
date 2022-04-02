@@ -16,7 +16,7 @@ class PriorityQueue :
         else :
             # cost paling kecil di paling depan antrian
             i = 0
-            while (i < self.len() and self.queue[i][1] < val) :
+            while (i < self.len() and self.queue[i][1] <= val) :
                 i += 1
             self.queue.insert(i, (puzzle, val, lv))
     
@@ -33,11 +33,15 @@ class PriorityQueue :
 
 
 class Solver :
+    # bikin vairabel past states yang isinya state yang udah pernah dilalui
+    # jadi setiap iterasi gak bakal balik-balik lagi ke situ
     def __init__(self, puzzle) :
         self.__puzzle = Puzzle()
         self.__puzzle.copy(puzzle) # adalah start state dari puzzle, tidak diubah
         self.__node_count = 1 # jumlah simpul yang dibangkitkan
         self.__queue = PriorityQueue() # antrian dari simpul yang telah dibangkitkan
+        self.__past_states = [] # list yang berisi (puzzle, cost)
+        self.__sequence = []
         self.__fin = False
 
     def kurang(self, no_ubin) :
@@ -72,104 +76,111 @@ class Solver :
         if (puzzle.isSolved()) :
             # finished
             self.__fin = True
+            self.__sequence = puzzle.getMoves()
         else :
             # urutan pencarian : up, right, down, left
             # bangkitkan semua simpul
             i = puzzle.locIdx(16)[0]
             j = puzzle.locIdx(16)[1]
+
             if (i != 0) :
-                child = self.up(puzzle, i,j)
-                if (child != NULL) :
-                    cost = lv + 1 + child.countCost()
+                child = Puzzle()
+                child.copy(puzzle)
+                child.up()
+                cost = lv + 1 + child.countCost()
+                if (not self.isPast(child, cost)) :
                     self.__queue.enqueue(child, cost, lv + 1)
-            if (j != 3) :
-                child = self.right(puzzle, i,j)
-                if (child != NULL) :
-                    cost = lv + 1 + child.countCost()
+                    self.__past_states.append((child, cost))
+                #print("up")
+                #child.displayPuzzle()
+            if (j != 3 ) :
+                child = Puzzle()
+                child.copy(puzzle)
+                child.right()
+                cost = lv + 1 + child.countCost()
+                if (not self.isPast(child, cost)) :
                     self.__queue.enqueue(child, cost, lv + 1)
+                    self.__past_states.append((child, cost))
+                #print("right")
+                #child.displayPuzzle()
             if (i != 3) :
-                child = self.down(puzzle, i,j)
-                if (child != NULL) :
-                    cost = lv + 1 + child.countCost()
+                child = Puzzle()
+                child.copy(puzzle)
+                child.down()
+                cost = lv + 1 + child.countCost()
+                if (not self.isPast(child, cost)) :
                     self.__queue.enqueue(child, cost, lv + 1)
+                    self.__past_states.append((child, cost))
+                #print("down")
+                #child.displayPuzzle()
             if (j != 0) :
-                child = self.left(puzzle, i,j)
-                if (child != NULL) :
-                    cost = lv + 1 + child.countCost()
+                child = Puzzle()
+                child.copy(puzzle)
+                child.left()
+                cost = lv + 1 + child.countCost()
+                if (not self.isPast(child, cost)) :
                     self.__queue.enqueue(child, cost, lv + 1)
-        
+                    self.__past_states.append((child, cost))
+                #print("left")
+                #child.displayPuzzle()
+    
 
     def solve(self) :
         if (self.isSolvable()) :
             # do something
             # branch and bound
             print("Puzzle dicari dengan metode branch and bound...")
-            self.__queue.enqueue(self.__puzzle, 0, 0)
-            while (not self.__fin) :
+            self.__queue.enqueue(self.__puzzle, self.__puzzle.countCost(), 0)
+            self.__past_states.append((self.__puzzle, 0))
+            while (not self.__fin and self.__queue.len() > 0) :
                 head = self.__queue.dequeue()
-                
-                head[0].displayPuzzle()
+
                 print("Level : ", head[2])
-                print("Cost : " , head[1])
+                head[0].displayPuzzle()
+                print("Cost : ", head[1])
+                print("Moves : ", head[0].getMoves())
                 print()
-                
                 
                 self.branchBound(head[0], head[2])
                 
                 #self.__fin = True
                 if (self.__fin) :
-                    print("This is the final state")
-            #self.__queue.printCost()
+                    print("Final state reached")
+            #self.__queue.printQueue()
+            self.displayMoves()
 
         else :
             print("Puzzle tidak dapat diselesaikan")
 
-
-    def up(self, puzzle, i, j) :
-        # loc_empty = self.__puzzle.locate(16)
-        child = Puzzle()
-        child.copy(puzzle)
-        if (i != 0) :
-            # ubin kosong tidak berada di baris dengan indeks 0, tukar dengan ubin atas
-            above = child.getByIdx(i-1, j)
-            child.setByIdx(i,j, above)
-            child.setByIdx(i-1, j, 16)
-            return child
-        else :
-            return NULL
-
-    def down(self, puzzle, i, j) :
-        child = Puzzle()
-        child.copy(puzzle)
-        if (i != 3) :
-            # ubin kosong tidak berada di baris dengan indeks 3, tukar dengan ubin bawah
-            below = child.getByIdx(i+1, j)
-            child.setByIdx(i,j, below)
-            child.setByIdx(i+1, j, 16)
-            return child
-        else :
-            return NULL
     
-    def left(self, puzzle, i, j) :
-        child = Puzzle()
-        child.copy(puzzle)
-        if (j != 0) :
-            # ubin kosong tidak berada di kolom dengan indeks 0, tukar dengan ubin kiri
-            left = child.getByIdx(i, j-1)
-            child.setByIdx(i,j, left)
-            child.setByIdx(i, j-1, 16)
-            return child
-        else :
-            return NULL
 
-    def right(self, puzzle, i, j) :
-        child = Puzzle()
-        child.copy(puzzle)
-        if (j != 3) :
-            # ubin kosong tidak berada di kolom dengan indeks 3, tukar dengan ubin kanan
-            right = child.getByIdx(i, j+1)
-            child.setByIdx(i,j, right)
-            child.setByIdx(i, j+1, 16)
-            return child
-        else :
-            return NULL
+    def isPast(self, puzzle, cost) :
+        i = 0
+        past = False
+        while (i < len(self.__past_states) and not past) :
+            if (self.__past_states[i][0].equals(puzzle)) :
+                if (self.__past_states[i][1] <= cost) :
+                    past = True
+                else :
+                    self.__past_states.pop(i)
+            else :
+                i += 1
+        return past
+
+    def displayMoves(self) :
+        print("Move sequence : ")
+        self.__puzzle.displayPuzzle()
+        copy_pz = Puzzle()
+        copy_pz.copy(self.__puzzle)
+        print()
+        for move in self.__sequence :
+            if (move == 'u') :
+                copy_pz.up()
+            elif (move == 'r') :
+                copy_pz.right()
+            elif (move == 'd') :
+                copy_pz.down()
+            else :
+                copy_pz.left()
+            copy_pz.displayPuzzle()
+            print()
