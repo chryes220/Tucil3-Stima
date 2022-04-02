@@ -1,6 +1,7 @@
 # solver.py
 
 from asyncio.windows_events import NULL
+import time
 from puzzle import Puzzle
 
 class PriorityQueue :
@@ -55,7 +56,9 @@ class Solver :
     def isSolvable(self) :
         kurang = 0
         for i in range (1, 17) :
+            print("Kurang(" + str(i) + ") =", self.kurang(i))
             kurang += self.kurang(i)
+        print()
         # tentukan X, tentukan apakah ubin diarsir atau tidak
         loc_empty = self.__puzzle.locate(16) - 1
         i = loc_empty // 4
@@ -64,12 +67,13 @@ class Solver :
         if (i % 2 == 0 and j % 2 == 1) :
             x = 1 # diarsir
         elif (i % 2 == 1 and j % 2 == 0) :
-            x = 1 # diarsir
+            x = 1 # 
+            
         
         if ((kurang + x) % 2 == 0) :
-            return True
+            return ((True, kurang + x))
         else :
-            return False
+            return ((False, kurang + x))
 
     def branchBound(self, puzzle, lv) :
         # memeriksa simpul dan membangkitkan anak-anaknya
@@ -126,10 +130,12 @@ class Solver :
     
 
     def solve(self) :
-        if (self.isSolvable()) :
-            # do something
+        solvable = self.isSolvable()
+        if (solvable[0]) :
+            print("Puzzle is solvable with value of Sum(Kurang(i)) + X =", solvable[1])
+            print()
             # branch and bound
-            print("Puzzle dicari dengan metode branch and bound...")
+            start = time.time()
             self.__queue.enqueue(self.__puzzle, self.__puzzle.countCost(), 0)
             self.__past_states.append((self.__puzzle, 0))
             while (not self.__fin and self.__queue.len() > 0) :
@@ -137,14 +143,14 @@ class Solver :
 
                 self.branchBound(head[0], head[2])
                 
-                #self.__fin = True
                 if (self.__fin) :
-                    print("Final state reached")
-            #self.__queue.printQueue()
+                    # display time
+                    end = time.time()
+                    print("Solution found in ", end-start, "s")
             self.displayMoves()
 
         else :
-            print("Puzzle tidak dapat diselesaikan")
+            print("Puzzle is solvable with value of Sum(Kurang(i)) + X =", solvable[1])
 
     
 
@@ -162,7 +168,6 @@ class Solver :
         return past
 
     def displayMoves(self) :
-        print(self.__sequence)
         print("Move sequence : ")
         self.__puzzle.displayPuzzle()
         copy_pz = Puzzle()
