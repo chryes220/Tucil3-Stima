@@ -5,7 +5,7 @@ from solver import Solver
 import random
 
 if __name__ == "__main__" :
-    path = "../test/"
+    path = "test/"
     #name = input("Masukkan nama file : ")
     name = "tc_solvable_3.txt"
     u = Puzzle()
