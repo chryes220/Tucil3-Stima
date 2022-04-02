@@ -69,10 +69,21 @@ class Puzzle :
                 self.__buffer[i][j] = num
 
     def displayPuzzle(self) :
+        print("╔═══╦═══╦═══╦═══╗")
         for i in range (4) :
+            print("║", end=" ")
             for j in range (4) :
-                print(self.__buffer[i][j], end = " ")
+                if (self.__buffer[i][j] != 16) :
+                    print(self.__buffer[i][j], end = "")
+                else :
+                    print(" ", end=" ")
+                if (self.__buffer[i][j] < 10) :
+                    print(" ", end="")
+                print("║", end=" ")
             print()
+            if(i != 3):
+                print("╠═══╬═══╬═══╬═══╣")
+        print("╚═══╩═══╩═══╩═══╝")
 
     def locate(self, no_ubin) :
         # posisi ubin dihitung dengan persamaan 4i + j + 1 (dimulai dari posisi 1)
