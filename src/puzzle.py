@@ -12,12 +12,16 @@ class Puzzle :
         #self.create_final()
     
     def from_file(self, filename) :
-        f = open(filename, "r")
-        for i in range (4) :
-            line = f.readline().strip()
-            nums = line.split(' ')
-            for j in range (4) :
-                self.__buffer[i][j] = int(nums[j])
+        try :
+            f = open(filename, "r")
+            for i in range (4) :
+                line = f.readline().strip()
+                nums = line.split(' ')
+                for j in range (4) :
+                    self.__buffer[i][j] = int(nums[j])
+        except FileNotFoundError:
+            print("Wrong file name!")
+            print("Generating random puzzle...")
     
     def add_movement(self, move) :
         self.__sequence.append(move)
