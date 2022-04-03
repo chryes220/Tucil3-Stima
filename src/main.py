@@ -6,11 +6,14 @@ import random
 
 if __name__ == "__main__" :
     path = "test/"
-    name = input("Masukkan nama file : ")
-    print()
-
     u = Puzzle()
-    u.from_file(path + name)
+
+    choice = input("Use randomized puzzle? [y/n] ")
+    if (choice == 'n') :
+        name = input("Input file name : ")
+        u.from_file(path + name)
+    print()
+    
     print("Initial state")
     u.displayPuzzle()
     print()
