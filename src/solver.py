@@ -153,6 +153,7 @@ class Solver :
                     end = time.time()
                     print("Solution found in ", end-start, "s")
                     print("Total node :", self.__node_count)
+                    print()
             self.displayMoves()
 
         else :

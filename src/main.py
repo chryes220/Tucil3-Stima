@@ -7,6 +7,7 @@ import random
 if __name__ == "__main__" :
     path = "test/"
     name = input("Masukkan nama file : ")
+    print()
 
     u = Puzzle()
     u.from_file(path + name)
