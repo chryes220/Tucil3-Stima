@@ -157,7 +157,7 @@ class Solver :
             self.displayMoves()
 
         else :
-            print("Puzzle is solvable with value of Sum(Kurang(i)) + X =", solvable[1])
+            print("Puzzle is not solvable with value of Sum(Kurang(i)) + X =", solvable[1])
 
     
 
